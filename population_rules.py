@@ -11,39 +11,43 @@ def determine_color(x, y, grid, adjacent_to_blue):
         if blue_neighbors == 1:
             if random.random() < 0.95:
                 candidate = "blue"
-            elif random.random() < 0.9:  
+            elif random.random() < 0.95:  
                 candidate = GRAY
             else:
                 candidate = "black"
         elif blue_neighbors == 2:
-            if random.random() < 0.05:
+            if random.random() < 0.1:
                 candidate = "blue"
             elif random.random() < 0.95:  
                 candidate = GRAY
             else:
                 candidate = "black"
         elif blue_neighbors >= 3:
-            if random.random() < 0.01:
+            if random.random() < 0.05:
                 candidate = "blue"
-            elif random.random() < 0.95:  
+            else:  
+                candidate = GRAY
+        else:
+            candidate = GRAY  
+    else:
+        if has_color_in_radius(grid, x, y, "black", 1):
+            candidate = GRAY
+        elif has_color_in_radius(grid, x, y, "black", 2):
+            if random.random() < 0.9:
                 candidate = GRAY
             else:
                 candidate = "black"
         else:
-            candidate = GRAY  
-    else:
-        if random.random() < 0.80:
-            candidate = GRAY
-        else:
-            candidate = "black"
-    if candidate == "black":
-        if has_color_in_radius(grid, x, y, "black", 1):
-            candidate = GRAY
-        elif has_color_in_radius(grid, x, y, "black", 2):
-            if random.random() < 0.8:
-                candidate = GRAY
-        elif has_color_in_radius(grid, x, y, "black", 3):
-            candidate = GRAY
+            if total_squares_of_color(grid, "black") > 3:
+                if random.random() < 0.9:
+                    candidate = GRAY
+                else:
+                    candidate = "black"
+            else:
+                if random.random() < 0.7:
+                    candidate = GRAY
+                else:
+                    candidate = "black"
     return candidate
 
 def count_adjacent_colors(grid, x, y, color):
@@ -65,12 +69,20 @@ def has_color_in_radius(grid, x, y, color, radius):
                     return True
     return False
 
-def get_growth_point(grid, last_generated):
-
+def get_growth_point(grid, last_generated, search_radius=5):
     x, y = last_generated
     empty_neighbors = get_empty_neighbors(x, y, grid)
     if empty_neighbors:
         return random.choice(empty_neighbors)
+    cells_in_radius = []
+    for dx in range(-search_radius, search_radius + 1):
+        for dy in range(-search_radius, search_radius + 1):
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < GRID_SIZE and 0 <= ny < GRID_SIZE:
+                if grid[nx][ny] is None:
+                    cells_in_radius.append((nx, ny))
+    if cells_in_radius:
+        return random.choice(cells_in_radius)
     all_empty = get_all_empty_cells(grid)
     if all_empty:
         return random.choice(all_empty)
@@ -85,12 +97,10 @@ def generate_population(canvas):
     draw_tile(canvas, start_x, start_y, "blue")
     canvas.update()
     time.sleep(SLEEP)
-
     total_cells = GRID_SIZE * GRID_SIZE
     placed = 1
     while placed < total_cells:
         next_x, next_y = get_growth_point(grid, last_generated)
-
         adjacent_to_blue = False
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = next_x + dx, next_y + dy
@@ -104,3 +114,7 @@ def generate_population(canvas):
         placed += 1
         canvas.update()
         time.sleep(SLEEP)
+
+def total_squares_of_color(grid, color):
+    return sum(row.count(color) for row in grid)
+
