@@ -1,6 +1,6 @@
 import tkinter as tk
 
-GRID_SIZE = 10
+GRID_SIZE = 12
 CELL_SIZE = 50
 
 def create_canvas():
@@ -39,7 +39,4 @@ def get_all_empty_cells(grid):
 
 def manhattan_distance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
-
-def choose_grey():
-    return "#d3d3d3"
 

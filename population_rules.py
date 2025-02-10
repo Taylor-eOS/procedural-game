@@ -3,52 +3,59 @@ import time
 from tkinter_logic import GRID_SIZE, draw_tile, get_empty_neighbors, get_all_empty_cells
 
 GRAY = "#d3d3d3"
-SLEEP = 0.03
+SLEEP = 0.025
 
 def determine_color(x, y, grid, adjacent_to_blue):
     if adjacent_to_blue:
         blue_neighbors = count_adjacent_colors(grid, x, y, "blue")
         if blue_neighbors == 1:
-            if random.random() < 0.95:
-                candidate = "blue"
+            if random.random() < 0.9:
+                return "blue"
             elif random.random() < 0.95:  
-                candidate = GRAY
+                return GRAY
             else:
-                candidate = "black"
+                return "black"
         elif blue_neighbors == 2:
-            if random.random() < 0.1:
-                candidate = "blue"
-            elif random.random() < 0.95:  
-                candidate = GRAY
+            if random.random() < 0.9:  
+                return GRAY
             else:
-                candidate = "black"
+                return "blue"
         elif blue_neighbors >= 3:
             if random.random() < 0.05:
-                candidate = "blue"
+                return "blue"
             else:  
-                candidate = GRAY
+                return GRAY
         else:
-            candidate = GRAY  
+            return GRAY  
     else:
+        if cells_of_color(grid, "yellow") == 0:
+            if random.random() < 0.7:
+                return "yellow"
+        elif cells_of_color(grid, "blue") < 6 and random.random() < 0.3:
+            return "blue"
+
         if has_color_in_radius(grid, x, y, "black", 1):
-            candidate = GRAY
+            if random.random() < 0.05:
+                return "black"
+            else:
+                return GRAY
         elif has_color_in_radius(grid, x, y, "black", 2):
-            if random.random() < 0.9:
-                candidate = GRAY
+            if random.random() < 0.2:
+                return "black"
             else:
-                candidate = "black"
+                return GRAY
         else:
-            if total_squares_of_color(grid, "black") > 3:
-                if random.random() < 0.9:
-                    candidate = GRAY
+            if cells_of_color(grid, "black") > 3:
+                if random.random() < 0.2:
+                    return "black"
                 else:
-                    candidate = "black"
+                    return GRAY
             else:
-                if random.random() < 0.7:
-                    candidate = GRAY
+                if random.random() < 0.5:
+                    return "black"
                 else:
-                    candidate = "black"
-    return candidate
+                    return GRAY
+    return GRAY
 
 def count_adjacent_colors(grid, x, y, color):
     count = 0
@@ -69,7 +76,7 @@ def has_color_in_radius(grid, x, y, color, radius):
                     return True
     return False
 
-def get_growth_point(grid, last_generated, search_radius=5):
+def get_growth_point(grid, last_generated, search_radius=4):
     x, y = last_generated
     empty_neighbors = get_empty_neighbors(x, y, grid)
     if empty_neighbors:
@@ -115,6 +122,6 @@ def generate_population(canvas):
         canvas.update()
         time.sleep(SLEEP)
 
-def total_squares_of_color(grid, color):
+def cells_of_color(grid, color):
     return sum(row.count(color) for row in grid)
 
