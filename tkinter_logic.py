@@ -17,3 +17,29 @@ def draw_tile(canvas, x, y, color):
     y2 = y1 + CELL_SIZE
     canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
 
+def get_empty_neighbors(x, y, grid):
+    neighbors = []
+    if x > 0 and grid[x-1][y] is None:
+        neighbors.append((x-1, y))
+    if x < GRID_SIZE - 1 and grid[x+1][y] is None:
+        neighbors.append((x+1, y))
+    if y > 0 and grid[x][y-1] is None:
+        neighbors.append((x, y-1))
+    if y < GRID_SIZE - 1 and grid[x][y+1] is None:
+        neighbors.append((x, y+1))
+    return neighbors
+
+def get_all_empty_cells(grid):
+    empty = []
+    for x in range(GRID_SIZE):
+        for y in range(GRID_SIZE):
+            if grid[x][y] is None:
+                empty.append((x, y))
+    return empty
+
+def manhattan_distance(x1, y1, x2, y2):
+    return abs(x1 - x2) + abs(y1 - y2)
+
+def choose_grey():
+    return "#d3d3d3"
+
