@@ -8,54 +8,42 @@ def determine_color(x, y, grid, adjacent_to_blue):
     blue_neighbors = count_adjacent_colors(grid, x, y, "blue")
     if adjacent_to_blue:
         if blue_neighbors == 1:
-            if random.random() < 0.8:
-                return "blue"
-            elif random.random() < 0.95:
-                return "snow"
-            else:
-                return "black"
+            if r(0.8): return "blue"
+            elif r(0.95): return "snow"
+            else: return "black"
         elif blue_neighbors == 2:
-            if cells_of_color(grid, "blue") < 15:
-                if random.random() < 0.9:
-                    return "snow"
-                else:
-                    return "blue"
+            if cells_of_color(grid, "blue") < 10:
+                if r(0.1): return "blue"
+                else: return "snow"
             else:
-                if random.random() < 0.5:
-                    return "snow"
-                else:
-                    return "blue"
-        else:
-            return "snow"
+                if r(0.5): return "snow"
+                else: return "blue"
+        else: return "snow"
     else:
         if cells_of_color(grid, "yellow") == 0 and blue_neighbors == 0:
-            if random.random() < 0.8:
-                return "yellow"
-        elif cells_of_color(grid, "blue") < 6 and random.random() < 0.3:
-            return "blue"
+            if r(0.8): return "yellow"
 
-        if has_color_in_radius(grid, x, y, "black", 1) and cells_of_color(grid, "black") < 4:
-            if random.random() < 0.05:
-                return "black"
-            else:
-                return "snow"
+        #elif not has_color_in_radius(grid, x, y, "blue", 2) and cells_of_color(grid, "blue") < 6:
+        #        if r(0.2): return "blue"
+
+        if has_color_in_radius(grid, x, y, "black", 1):
+            if cells_of_color(grid, "black") < 4:
+                if r(0.05): return "black"
+                else: return "snow"
         elif has_color_in_radius(grid, x, y, "black", 2):
-            if random.random() < 0.15:
-                return "black"
-            else:
-                return "snow"
+            if r(0.15): return "black"
+            else: return "snow"
         else:
             if cells_of_color(grid, "black") > 3:
-                if random.random() < 0.2:
-                    return "black"
-                else:
-                    return "snow"
+                if r(0.2): return "black"
+                else: return "snow"
             else:
-                if random.random() < 0.5:
-                    return "black"
-                else:
-                    return "snow"
+                if r(0.5): return "black"
+                else: return "snow"
     return "snow"
+
+def r(value):
+    return random.random() < value
 
 def count_adjacent_colors(grid, x, y, color):
     count = 0
@@ -115,6 +103,8 @@ def generate_population(canvas):
                 adjacent_to_blue = True
                 break
         color_choice = determine_color(next_x, next_y, grid, adjacent_to_blue)
+        #print(f"({next_x},{next_y}) {color_choice}")
+        #print(f"({grid}")
         grid[next_x][next_y] = color_choice
         draw_tile(canvas, next_x, next_y, color_choice)
         last_generated = (next_x, next_y)
