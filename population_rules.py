@@ -2,60 +2,60 @@ import random
 import time
 from tkinter_logic import GRID_SIZE, draw_tile, get_empty_neighbors, get_all_empty_cells
 
-GRAY = "#d3d3d3"
 SLEEP = 0.025
 
 def determine_color(x, y, grid, adjacent_to_blue):
+    blue_neighbors = count_adjacent_colors(grid, x, y, "blue")
     if adjacent_to_blue:
-        blue_neighbors = count_adjacent_colors(grid, x, y, "blue")
         if blue_neighbors == 1:
-            if random.random() < 0.9:
+            if random.random() < 0.8:
                 return "blue"
-            elif random.random() < 0.95:  
-                return GRAY
+            elif random.random() < 0.95:
+                return "snow"
             else:
                 return "black"
         elif blue_neighbors == 2:
-            if random.random() < 0.9:  
-                return GRAY
+            if cells_of_color(grid, "blue") < 15:
+                if random.random() < 0.9:
+                    return "snow"
+                else:
+                    return "blue"
             else:
-                return "blue"
-        elif blue_neighbors >= 3:
-            if random.random() < 0.05:
-                return "blue"
-            else:  
-                return GRAY
+                if random.random() < 0.5:
+                    return "snow"
+                else:
+                    return "blue"
         else:
-            return GRAY  
+            return "snow"
     else:
-        if cells_of_color(grid, "yellow") == 0:
-            if random.random() < 0.7:
+        if cells_of_color(grid, "yellow") == 0 and blue_neighbors == 0:
+            if random.random() < 0.8:
                 return "yellow"
         elif cells_of_color(grid, "blue") < 6 and random.random() < 0.3:
             return "blue"
 
-        if has_color_in_radius(grid, x, y, "black", 1):
+        if has_color_in_radius(grid, x, y, "black", 1) and cells_of_color(grid, "black") < 4:
             if random.random() < 0.05:
                 return "black"
             else:
-                return GRAY
+                return "snow"
         elif has_color_in_radius(grid, x, y, "black", 2):
-            if random.random() < 0.2:
+            if random.random() < 0.15:
                 return "black"
             else:
-                return GRAY
+                return "snow"
         else:
             if cells_of_color(grid, "black") > 3:
                 if random.random() < 0.2:
                     return "black"
                 else:
-                    return GRAY
+                    return "snow"
             else:
                 if random.random() < 0.5:
                     return "black"
                 else:
-                    return GRAY
-    return GRAY
+                    return "snow"
+    return "snow"
 
 def count_adjacent_colors(grid, x, y, color):
     count = 0
@@ -69,7 +69,7 @@ def has_color_in_radius(grid, x, y, color, radius):
     for dx in range(-radius, radius + 1):
         for dy in range(-radius, radius + 1):
             if dx == 0 and dy == 0:
-                continue  
+                continue
             nx, ny = x + dx, y + dy
             if 0 <= nx < GRID_SIZE and 0 <= ny < GRID_SIZE:
                 if grid[nx][ny] == color:
